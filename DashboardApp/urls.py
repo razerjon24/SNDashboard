@@ -4,7 +4,7 @@ urlpatterns = [
     # ex: /polls/
     url(r'^$', views.IndexView.as_view(), name='index'),
     # ex: /polls/5/
-    url(r'^(?P<question_id>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
+    url(r'^heatmap/', views.DetailView.as_view(), name='detail'),
     # ex: /polls/5/results/
     url(r'^(?P<question_id>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),
     # ex: /polls/5/vote/

@@ -4,24 +4,12 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.views import generic
 from .models import Choice, Question
-class IndexView(generic.ListView):
+class IndexView(generic.TemplateView):
    template_name = "DashboardApp/index.html"
-   context_object_name = "latest_question_list"
 
-   def get_queryset(self):
-       return Question.objects.filter(
-           pub_date__lte=timezone.now()
-           ).order_by('-pub_date')[:5]
-
-class DetailView(generic.DetailView):
-   model = Question
-   template_name = "DashboardApp/detail.html"
-
-   def get_queryset(self):
-       """
-       Excludes any questions that aren't published yet.
-       """
-       return Question.objects.filter(pub_date__lte=timezone.now())
+class DetailView(generic.TemplateView):
+    template_name = "DashboardApp/visualization.html"
+    context_object_name = "visualization"
 
 
 class ResultsView(generic.DetailView):
