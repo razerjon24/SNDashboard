@@ -1,31 +1,21 @@
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
 from django.views import generic
-from .models import Choice, Question
+from django.http import JsonResponse
+from collections import Counter
+from .models import Points
+
 class IndexView(generic.TemplateView):
    template_name = "DashboardApp/index.html"
 
-class DetailView(generic.TemplateView):
+class HeatMapView(generic.TemplateView):
     template_name = "DashboardApp/visualization.html"
-    context_object_name = "visualization"
 
-
-class ResultsView(generic.DetailView):
-   model = Question
-   template_name = "DashboardApp/results.html"
-
-   def vote(request, question_id):
-       p = get_object_or_404(Question, pk=question_id)
-       try:
-           selected_choice = p.choice_set.get(pk=request.POST['choice'])
-       except (KeyError, Choice.DoesNotExist):
-           return render(request, 'DashboardApp/detail.html', {
-               'question': p,
-               'error_message': "You didn't select a choice",
-           })
-       else:
-           selected_choice.votes += 1
-           selected_choice.save()
-           return HttpResponseRedirect(reverse('DashboardApp:results', args=(p.id,)))
+def test(request):
+    start_day = request.GET['start_day']
+    start_hour = request.GET['start_hour']
+    end_day = request.GET['end_day']
+    end_hour = request.GET['end_hour']
+    geo_points = Points.objects.filter(day__range=(start_day,end_day)).filter(hour__range=(start_hour,end_hour))
+    geo_points = [str(point) for point in geo_points]
+    frecuencias=list(Counter(geo_points).most_common())
+    lons, lats, counts = [frecuencia[0].split(',')[0] for frecuencia in frecuencias],[frecuencia[0].split(',')[1] for frecuencia in frecuencias],[1 for frecuencia in frecuencias]
+    return JsonResponse({'lons': lons,'lats': lats, 'counts': counts, 'len': len(frecuencias)})
