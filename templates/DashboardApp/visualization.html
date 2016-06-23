@@ -12,6 +12,7 @@
 <script src="{% static 'js/heatmap.js' %}"></script>
 <script src="{% static 'js/leaflet-heatmap.js' %}"></script>
 <script src="{% static 'js/bootstrap-slider.js' %}"></script>
+<script src="{% static 'js/TileLayer.Grayscale.js' %}"></script>
 <script type="text/javascript">
     var mySlider, leftlabel, rightlabel, mySlider2, leftlabel2, rightlabel2, cfg, heatmapLayer, timer, day, hour, dataListAni = [];
     cfg = {
@@ -28,6 +29,11 @@
         };
     heatmapLayer = new HeatmapOverlay(cfg);
     function start_animation(){
+        var animate = document.getElementById("animate");
+        animate.setAttribute("class","btn btn-sm btn-danger");
+        animate.innerHTML = '<i class="fa fa-stop fa-5x" style="padding: 8px 18px" onclick="stop_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i>';
+        mySlider.setValue([17,30]);
+        mySlider2.setValue([0,23]);
         heatmapLayer.setData({data:[]});
         hour = 0;
         day = 17;
@@ -58,9 +64,36 @@
                 dataListAni = [];
                 mySlider.enable();
                 mySlider2.enable();
+                var animate = document.getElementById("animate");
+                animate.setAttribute("class","btn btn-sm btn-primary");
+                animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i>';
                 stop_Timer();
             }
         }, 250);
+    }
+    function stop_animation(){
+        var animate = document.getElementById("animate");
+        animate.setAttribute("class","btn btn-sm btn-primary");
+        animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i>';
+        stop_Timer();
+        mySlider.setValue([17,17]);
+        mySlider2.setValue([0,0]);
+        rightlabel.innerHTML = "<strong>17</strong>";
+        rightlabel2.innerHTML = "<strong>0:00</strong>";
+        mySlider.enable();
+        mySlider2.enable();
+        dataListAni = [];
+        $.ajax({url: "test/", data:{start_day:17,start_hour:0,end_day:17,end_hour:0},success: function(result) {
+            var dataList = [], lng, lat, count, len;
+            for (var i = 0; i < result['len']; i++) {
+                lng = parseFloat(result['lons'][i]);
+                lat = parseFloat(result['lats'][i]);
+                count = parseInt(result['counts'][i]);
+                dataList.push({lng: lng, lat: lat, count: count});
+            }
+            len = result['len'];
+            paint_points(dataList, len);
+        }});
     }
     function stop_Timer(){
         clearInterval(timer);
@@ -87,7 +120,6 @@
         });
         mySlider.on('slideStop', function(event){
             var value = mySlider.getValue();
-            heatmapLayer.setData([]);
             leftlabel.innerHTML = "<strong>"+value[0]+"</strong>";
             rightlabel.innerHTML = "<strong>"+value[1]+"</strong>";
             $.ajax({url: "test/", data:{start_day:value[0],start_hour:mySlider2.getValue()[0],end_day:value[1],end_hour:mySlider2.getValue()[1]},success: function(result) {
@@ -116,7 +148,6 @@
         });
         mySlider2.on('slideStop', function(event) {
             var value = mySlider2.getValue();
-            heatmapLayer.setData([]);
             leftlabel2.innerHTML = "<strong>"+value[0]+":00</strong>";
             rightlabel2.innerHTML = "<strong>"+value[1]+":00</strong>";
             $.ajax({url: "test/", data:{start_day:mySlider.getValue()[0],start_hour:value[0],end_day:mySlider.getValue()[1],end_hour:value[1]},success: function(result){
@@ -132,7 +163,7 @@
             }});
         });
 
-        var baseLayer = L.tileLayer(
+        var baseLayer = L.tileLayer.grayscale(
         'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
                     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
                     maxZoom: 18,
@@ -209,24 +240,6 @@
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
 		<div class="row">
             <div class="col-lg-12">
-                <!-- Modal -->
-                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-                      </div>
-                      <div class="modal-body">
-                        ...
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div class="col-lg-12" style="margin-top: 2%; margin-bottom: 2%">
                     <div class="col-lg-3">
                         <h2 class="page-header text-center text-primary">Actividad Online</h2>
@@ -235,30 +248,30 @@
                         <p class="text-center" style="font-size: 18px">Seleccione los d&iacute;as a observar</p>
                         <div class="col-md-12">
                             <div class="col-md-1">
-                                <p id="leftlabel" class="text-right"><strong>17</strong></p>
+                                <p id="leftlabel" style="font-size: 16px" class="text-right"><strong>17</strong></p>
                             </div>
                             <div class="col-md-10">
                                 <input style="width: 100%" id="slider">
                             </div>
                             <div class="col-md-1">
-                                <p id="rightlabel" class="text-left"><strong>17</strong></p>
+                                <p id="rightlabel" style="font-size: 16px" class="text-left"><strong>17</strong></p>
                             </div>
                         </div>
                         <p class="text-center" style="font-size: 18px">Seleccione las horas a observar</p>
                         <div class="col-md-12" style="margin-bottom: 1%">
                             <div class="col-md-1">
-                                <p id="leftlabel2" class="text-right"><strong>0:00</strong></p>
+                                <p id="leftlabel2" style="font-size: 16px" class="text-right"><strong>0:00</strong></p>
                             </div>
                             <div class="col-md-10">
                                 <input style="width: 100%" id="slider2">
                             </div>
                             <div class="col-md-1">
-                                <p id="rightlabel2" class="text-left"><strong>0:00</strong></p>
+                                <p id="rightlabel2" style="font-size: 16px" class="text-left"><strong>0:00</strong></p>
                             </div>
                         </div>
                     </div><!--/.col-->
                     <div class="col-lg-3 text-center">
-                        <button id="test" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#myModal"><i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i></button>
+                        <button id="animate" class="btn btn-sm btn-primary"><i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i></button>
                     </div>
                 </div>
                 <div class="col-md-12" id="map" style="height: 700px"></div>
