@@ -1,0 +1,95 @@
+{% load staticfiles %}
+<meta charset="UTF-8">
+<title>Caracterización de tópicos</title>
+<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+<link href="{% static 'css/styles.css' %}" rel="stylesheet">
+<link href="{% static 'css/bootstrap-slider.css' %}" rel="stylesheet">
+<link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+<link rel="icon" href="{% static 'images/ec.ico' %}">
+<script src="{% static 'js/jquery-3.0.0.js' %}"></script>
+<script src="{% static 'js/lumino.glyphs.js' %}"></script>
+<script src="{% static 'js/bootstrap-slider.js' %}"></script>
+<script src="{% static 'js/d3.js' %}" charset="utf-8"></script>
+<script src="{% static 'js/d3.layout.cloud.js' %}"></script>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href=""><span>Terremoto en Ecuador</span> Tablero de Herramientas</a>
+			</div>
+		</div><!-- /.container-fluid -->
+	</nav>
+
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<ul class="nav menu">
+			<li><a href="/" style="font-size: 18px"><svg class="glyph stroked home"><use xlink:href="#stroked-home"/></svg> Home</a></li>
+			<li class="parent">
+                <a data-toggle="collapse" href="#sub-item-1" style="font-size: 18px">
+                    <svg class="glyph stroked location pin"><use xlink:href="#stroked-location-pin"/></svg> Visualizaci&oacute;n Geogr&aacute;fica
+                </a>
+				<ul class="children collapse" id="sub-item-1">
+					<li>
+						<a href="/heatmap" style="font-size: 18px">
+							<svg class="glyph stroked map"><use xlink:href="#stroked-map"/></svg> Actividad Online
+						</a>
+					</li>
+					<li>
+						<a href="#" style="font-size: 18px">
+							<svg class="glyph stroked landscape"><use xlink:href="#stroked-landscape"/></svg> Geo-Pics
+						</a>
+					</li>
+				</ul>
+			</li>
+			<li class="active"><a href="#" style="font-size: 18px"><svg class="glyph stroked two messages"><use xlink:href="#stroked-two-messages"/></svg> Caracterizaci&oacute;n de T&oacute;picos</a></li>
+			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
+			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Grafo de Hashtags</a></li>
+		</ul>
+
+	</div><!--/.sidebar-->
+    <div id="main" class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+
+    </div>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+<script type="text/javascript">
+    var fill = d3.scale.category20c();
+    var layout = d3.layout.cloud().size([500, 500])
+        .words([
+          "Hello", "world", "normally", "you", "want", "more", "words",
+          "than", "this"].map(function(d) {
+          return {text: d, size: 10 + Math.random() * 90, test: "haha"};
+        }))
+        .padding(5)
+        .rotate(function() { return ~~(Math.random() * 2) * 90; })
+        .font("Impact")
+        .fontSize(function(d) { return d.size; })
+        .on("end", draw);
+
+    layout.start();
+
+    function draw(words) {
+      d3.select("#main").append("svg")
+          .attr("width", layout.size()[0])
+          .attr("height", layout.size()[1])
+        .append("g")
+          .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+        .selectAll("text")
+          .data(words)
+        .enter().append("text")
+          .style("font-size", function(d) { return d.size + "px"; })
+          .style("font-family", "Impact")
+          .style("fill", function(d, i)
+          { return fill(i); })
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d) {
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+          })
+          .text(function(d) { return d.text; });
+    }
+</script>

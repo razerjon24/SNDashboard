@@ -16,10 +16,10 @@
 <script type="text/javascript">
     var mySlider, leftlabel, rightlabel, mySlider2, leftlabel2, rightlabel2, cfg, heatmapLayer, timer, day, hour, dataListAni = [];
     cfg = {
-            "radius": 5.5,
+            "radius": 10,
             "maxOpacity": 1,
-            "minOpacity": 0.23,
-            "blur": 0.65,
+            "minOpacity": 0.05,
+            "blur": 0.90,
             "scaleRadius": false,
             "useLocalExtrema": true,
             latField: 'lat',
@@ -31,7 +31,7 @@
     function start_animation(){
         var animate = document.getElementById("animate");
         animate.setAttribute("class","btn btn-sm btn-danger");
-        animate.innerHTML = '<i class="fa fa-stop fa-5x" style="padding: 8px 18px" onclick="stop_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i>';
+        animate.innerHTML = '<i class="fa fa-stop fa-5x" style="padding: 8px 18px" onclick="stop_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Stop</p></i>';
         mySlider.setValue([17,30]);
         mySlider2.setValue([0,23]);
         heatmapLayer.setData({data:[]});
@@ -40,25 +40,36 @@
         mySlider.disable();
         mySlider2.disable();
         timer = setInterval(function(){
-            if(day < 31 && hour < 24){
-                $.ajax({url: "test/", async:false ,data:{start_day:day,start_hour:0,end_day:day,end_hour:hour},success: function(result) {
-                var lng, lat, count, len;
-                for (var i = 0; i < result['len']; i++) {
-                    lng = parseFloat(result['lons'][i]);
-                    lat = parseFloat(result['lats'][i]);
-                    count = parseInt(result['counts'][i]);
-                    dataListAni.push({lng: lng, lat: lat, count: count});
-                }
-                len = result['len'];
-                paint_points(dataListAni, len);
-                rightlabel.innerHTML = "<strong>"+day+"</strong>";
-                rightlabel2.innerHTML = "<strong>"+hour+":00</strong>";
-                hour = hour + 1;
-                }});
+            if(day < 31 && hour < 24) {
+                $.ajax({
+                    url: "test/",
+                    async: false,
+                    data: {start_day: day, start_hour: 0, end_day: day, end_hour: hour},
+                    success: function (result) {
+                        var lng, lat, count, len;
+                        for (var i = 0; i < result['len']; i++) {
+                            lng = parseFloat(result['lons'][i]);
+                            lat = parseFloat(result['lats'][i]);
+                            count = parseInt(result['counts'][i]);
+                            dataListAni.push({lng: lng, lat: lat, count: count});
+                        }
+                        len = result['len'];
+                        paint_points(dataListAni, len);
+                        leftlabel.innerHTML = "<strong>" + day + "</strong>";
+                        rightlabel.innerHTML = "<strong>" + day + "</strong>";
+                        rightlabel2.innerHTML = "<strong>" + hour + ":00</strong>";
+                        hour = hour + 1;
+                    }
+                });
             }
-            else if(day < 31 && hour == 24){
+            else if(hour > 23 && hour < 28){
+                hour = hour + 1;
+            }
+            else if(day < 31 && hour == 28){
                 hour = 0;
                 day = day + 1;
+                dataListAni = [];
+                paint_points(dataListAni, 0);
             }
             else if(day == 31){
                 dataListAni = [];
@@ -66,18 +77,19 @@
                 mySlider2.enable();
                 var animate = document.getElementById("animate");
                 animate.setAttribute("class","btn btn-sm btn-primary");
-                animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i>';
+                animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Play</p></i>';
                 stop_Timer();
             }
-        }, 250);
+        }, 750);
     }
     function stop_animation(){
         var animate = document.getElementById("animate");
         animate.setAttribute("class","btn btn-sm btn-primary");
-        animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i>';
+        animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Play</p></i>';
         stop_Timer();
         mySlider.setValue([17,17]);
         mySlider2.setValue([0,0]);
+        leftlabel.innerHTML = "<strong>17</strong>";
         rightlabel.innerHTML = "<strong>17</strong>";
         rightlabel2.innerHTML = "<strong>0:00</strong>";
         mySlider.enable();
@@ -230,7 +242,7 @@
 					</li>
 				</ul>
 			</li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked two messages"><use xlink:href="#stroked-two-messages"/></svg> Caracterizaci&oacute;n de T&oacute;picos</a></li>
+			<li><a href="/topic" style="font-size: 18px"><svg class="glyph stroked two messages"><use xlink:href="#stroked-two-messages"/></svg> Caracterizaci&oacute;n de T&oacute;picos</a></li>
 			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
 			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Grafo de Hashtags</a></li>
 		</ul>
@@ -241,37 +253,37 @@
 		<div class="row">
             <div class="col-lg-12">
                 <div class="col-lg-12" style="margin-top: 2%; margin-bottom: 2%">
-                    <div class="col-lg-3">
+                    <div class="col-md-3">
                         <h2 class="page-header text-center text-primary">Actividad Online</h2>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-md-6">
                         <p class="text-center" style="font-size: 18px">Seleccione los d&iacute;as a observar</p>
                         <div class="col-md-12">
-                            <div class="col-md-1">
-                                <p id="leftlabel" style="font-size: 16px" class="text-right"><strong>17</strong></p>
+                            <div class="col-md-2">
+                                <p id="leftlabel" class="text-right" style="font-size: 16px"><strong>17</strong></p>
                             </div>
-                            <div class="col-md-10">
+                            <div class="col-md-8">
                                 <input style="width: 100%" id="slider">
                             </div>
-                            <div class="col-md-1">
-                                <p id="rightlabel" style="font-size: 16px" class="text-left"><strong>17</strong></p>
+                            <div class="col-md-2">
+                                <p id="rightlabel" class="text-left" style="font-size: 16px"><strong>17</strong></p>
                             </div>
                         </div>
                         <p class="text-center" style="font-size: 18px">Seleccione las horas a observar</p>
-                        <div class="col-md-12" style="margin-bottom: 1%">
-                            <div class="col-md-1">
-                                <p id="leftlabel2" style="font-size: 16px" class="text-right"><strong>0:00</strong></p>
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <p id="leftlabel2" class="text-right" style="font-size: 16px"><strong>0:00</strong></p>
                             </div>
-                            <div class="col-md-10">
+                            <div class="col-md-8">
                                 <input style="width: 100%" id="slider2">
                             </div>
-                            <div class="col-md-1">
-                                <p id="rightlabel2" style="font-size: 16px" class="text-left"><strong>0:00</strong></p>
+                            <div class="col-md-2">
+                                <p id="rightlabel2" class="text-left" style="font-size: 16px"><strong>0:00</strong></p>
                             </div>
                         </div>
                     </div><!--/.col-->
-                    <div class="col-lg-3 text-center">
-                        <button id="animate" class="btn btn-sm btn-primary"><i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Animar</p></i></button>
+                    <div class="col-md-3 text-center">
+                        <button id="animate" class="btn btn-sm btn-primary"><i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Play</p></i></button>
                     </div>
                 </div>
                 <div class="col-md-12" id="map" style="height: 700px"></div>
