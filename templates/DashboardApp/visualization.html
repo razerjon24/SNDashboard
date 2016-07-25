@@ -42,7 +42,7 @@
         timer = setInterval(function(){
             if(day < 31 && hour < 24) {
                 $.ajax({
-                    url: "test/",
+                    url: "points/",
                     async: false,
                     data: {start_day: day, start_hour: 0, end_day: day, end_hour: hour},
                     success: function (result) {
@@ -95,7 +95,7 @@
         mySlider.enable();
         mySlider2.enable();
         dataListAni = [];
-        $.ajax({url: "test/", data:{start_day:17,start_hour:0,end_day:17,end_hour:0},success: function(result) {
+        $.ajax({url: "points/", data:{start_day:17,start_hour:0,end_day:17,end_hour:0},success: function(result) {
             var dataList = [], lng, lat, count, len;
             for (var i = 0; i < result['len']; i++) {
                 lng = parseFloat(result['lons'][i]);
@@ -130,11 +130,14 @@
             min: 17,
             max: 30
         });
-        mySlider.on('slideStop', function(event){
+        mySlider.on('change', function(event){
             var value = mySlider.getValue();
             leftlabel.innerHTML = "<strong>"+value[0]+"</strong>";
             rightlabel.innerHTML = "<strong>"+value[1]+"</strong>";
-            $.ajax({url: "test/", data:{start_day:value[0],start_hour:mySlider2.getValue()[0],end_day:value[1],end_hour:mySlider2.getValue()[1]},success: function(result) {
+        });
+        mySlider.on('slideStop', function(event){
+            var value = mySlider.getValue();
+            $.ajax({url: "points/", data:{start_day:value[0],start_hour:mySlider2.getValue()[0],end_day:value[1],end_hour:mySlider2.getValue()[1]},success: function(result) {
                 var dataList = [], lng, lat, count, len;
                 for (var i = 0; i < result['len']; i++) {
                     lng = parseFloat(result['lons'][i]);
@@ -158,11 +161,14 @@
             min: 0,
             max: 23
         });
-        mySlider2.on('slideStop', function(event) {
+        mySlider2.on('change', function(event){
             var value = mySlider2.getValue();
             leftlabel2.innerHTML = "<strong>"+value[0]+":00</strong>";
             rightlabel2.innerHTML = "<strong>"+value[1]+":00</strong>";
-            $.ajax({url: "test/", data:{start_day:mySlider.getValue()[0],start_hour:value[0],end_day:mySlider.getValue()[1],end_hour:value[1]},success: function(result){
+        });
+        mySlider2.on('slideStop', function(event) {
+            var value = mySlider2.getValue();
+            $.ajax({url: "points/", data:{start_day:mySlider.getValue()[0],start_hour:value[0],end_day:mySlider.getValue()[1],end_hour:value[1]},success: function(result){
                 var dataList = [], lng, lat, count, len;
                 for (var i = 0; i < result['len']; i++) {
                     lng = parseFloat(result['lons'][i]);
@@ -194,7 +200,7 @@
 
         // make accessible for debugging
         layer = heatmapLayer;
-        $.ajax({url: "test/", data:{start_day:mySlider.getValue()[0],start_hour:mySlider2.getValue()[0],end_day:mySlider.getValue()[1],end_hour:mySlider2.getValue()[1]},success: function(result){
+        $.ajax({url: "points/", data:{start_day:mySlider.getValue()[0],start_hour:mySlider2.getValue()[0],end_day:mySlider.getValue()[1],end_hour:mySlider2.getValue()[1]},success: function(result){
                 var dataList = [], lng, lat, count, len;
                 for (var i = 0; i < result['len']; i++) {
                     lng = parseFloat(result['lons'][i]);
@@ -236,7 +242,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="#" style="font-size: 18px">
+						<a href="/geopics" style="font-size: 18px">
 							<svg class="glyph stroked landscape"><use xlink:href="#stroked-landscape"/></svg> Geo-Pics
 						</a>
 					</li>

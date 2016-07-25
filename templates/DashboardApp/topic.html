@@ -40,7 +40,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="#" style="font-size: 18px">
+						<a href="/geopics" style="font-size: 18px">
 							<svg class="glyph stroked landscape"><use xlink:href="#stroked-landscape"/></svg> Geo-Pics
 						</a>
 					</li>
@@ -52,29 +52,72 @@
 		</ul>
 
 	</div><!--/.sidebar-->
-    <div id="main" class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
-
+    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+        <div class="row" style="margin-top: 2%; margin-bottom: 2%">
+            <div class="col-md-offset-2 col-md-3">
+                <h2 class="page-header text-center text-primary">Burst Topics</h2>
+            </div>
+            <div class="col-md-5">
+                <p class="text-center" style="font-size: 18px">Seleccione el d&iacute;a a observar</p>
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <p class="text-right" style="font-size: 16px"><strong>17</strong></p>
+                    </div>
+                    <div class="col-md-8">
+                        <input style="width: 100%" id="slider">
+                    </div>
+                    <div class="col-md-2">
+                        <p class="text-left" style="font-size: 16px"><strong>30</strong></p>
+                    </div>
+                </div>
+            </div><!--/.col-->
+            <div id="wordcloud" class="col-md-12 text-center"></div>
+        </div>
     </div>
     <script src="{% static 'js/bootstrap.js' %}"></script>
 </body>
 <script type="text/javascript">
-    var fill = d3.scale.category20c();
-    var layout = d3.layout.cloud().size([500, 500])
-        .words([
-          "Hello", "world", "normally", "you", "want", "more", "words",
-          "than", "this"].map(function(d) {
-          return {text: d, size: 10 + Math.random() * 90, test: "haha"};
-        }))
-        .padding(5)
+    var words = [], words_layout = document.getElementById("wordcloud");
+    var layout;
+    var fill = d3.scale.category10();
+        layout = d3.layout.cloud().size([1250, 730])
+        .padding(2)
         .rotate(function() { return ~~(Math.random() * 2) * 90; })
         .font("Impact")
         .fontSize(function(d) { return d.size; })
         .on("end", draw);
+        $.ajax({async : false, url: "bursts/", data:{start_day:17,end_day:17},success: function(result) {
+                layout.words(result['words'].map(function(d) {
+                    return {text: d, size: result['levels'][result['words'].indexOf(d)]*6};
+                    }));
+                layout.start();
+            }});
+    window.onload = function() {
+        rightlabel = document.getElementById("rightlabel");
+        mySlider = new Slider("#slider", {
+            id: "slider_dias",
+            tooltip: "always",
+            tooltip_position: "bottom",
+            range: false,
+            value: 17,
+            min: 17,
+            max: 30
+        });
+        mySlider.on('slideStop', function(event){
+            var value = mySlider.getValue();
+            $.ajax({async : false, url: "bursts/", data:{start_day:value,end_day:value},success: function(result) {
+                words_layout.innerHTML = "";
+                layout.words(result['words'].map(function(d) {
+                    return {text: d, size: result['levels'][result['words'].indexOf(d)]*6};
+                    }));
+                layout.start();
+            }});
 
-    layout.start();
+        });
+    };
 
     function draw(words) {
-      d3.select("#main").append("svg")
+      d3.select("#wordcloud").append("svg")
           .attr("width", layout.size()[0])
           .attr("height", layout.size()[1])
         .append("g")
