@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^topic/bursts/$',views.get_topics, name='bursts'),
     url(r'^geopics/$',views.GeoPicsView.as_view(), name='geopics'),
     url(r'^geopics/clusters/$',views.get_clusters, name='clusters'),
+    url(r'^geopics/pics/$',views.get_pics, name='pics'),
     # ex: /polls/5/vote/
 ]

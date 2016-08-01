@@ -7,6 +7,7 @@
 <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
 <link rel="icon" href="{% static 'images/ec.ico' %}">
 <script src="{% static 'js/jquery-3.0.0.js' %}"></script>
+<script src="{% static 'js/jquery.bpopup.min.js' %}"></script>
 <script src="{% static 'js/lumino.glyphs.js' %}"></script>
 <script src="{% static 'leaflet/leaflet.js' %}"></script>
 <script src="{% static 'js/heatmap.js' %}"></script>
@@ -16,27 +17,63 @@
 <script type="text/javascript">
     var map;
     function paint_Points(tipo){
+        var pics = document.getElementById('pics');
+        pics.innerHTML = '<p class="text-center" style="font-size: 20px; margin-top: 48%">Seleccione alg&uacute;n punto en el mapa para visualizar las fotograf&iacute;as</p>';
+        var Color;
+        if(tipo == "Desastres"){
+            Color = "#FF0000";
+        }
+        else if(tipo == "Mensajes"){
+            Color = "#00ff40";
+        }
+        else if(tipo == "Mensajes Donacion"){
+            Color = "#ffff66";
+        }
+        else if(tipo == "Centros de Acopio"){
+            Color = "#0080ff";
+        }
         $.ajax({url: "clusters/", data:{'tipo':tipo},success: function(result){
             map.remove();
             init_map();
             var clusterPoints = [];
             var geojsonMarkerOptions = {
                 radius: 5,
-                fillColor: "#FF0000",
+                fillColor: Color,
                 color: "#000",
                 weight: 1,
                 opacity: 1,
                 fillOpacity: 0.8
             };
             for (var i = 0; i < result['len']; i++) {
-                clusterPoints.push({"type":"Point","coordinates":result['points'][i]});
+                clusterPoints.push({"type":"Point","coordinates":result['points'][i],
+                'properties': {'id': [result['clusters'][i],result['tipo']]}});
             }
             L.geoJson(clusterPoints, {
             pointToLayer: function (feature, latlng) {
                 return L.circleMarker(latlng, geojsonMarkerOptions);
-            }
+            },
+                onEachFeature: onEachFeature
             }).addTo(map);
         }});
+    }
+    function popup_pic(url){
+        document.getElementById('popup_img').setAttribute("src",url);
+        $('#popup_img').bPopup();
+    }
+    function onEachFeature(feature, layer) {
+        layer.on('click', function (e) {
+            $.ajax({url: "pics/", data:{'tipo':feature.properties.id[1],'cluster':feature.properties.id[0]},success: function(result){
+                var pics = document.getElementById('pics');
+                pics.innerHTML = "";
+                for (var i = 0; i < result['len']; i++) {
+                    var div = document.createElement('div');
+                    div.setAttribute("class","col-md-4");
+                    div.style.padding = 0;
+                    div.innerHTML = "<a href='#'><img class='img-responsive' onclick=popup_pic('"+result['pics'][i]+"') src="+result['pics'][i]+"></img></a>";
+                    pics.appendChild(div);
+                }
+            }});
+        });
     }
     window.onload = function() {
         $.ajax({url: "clusters/", data:{'tipo':"Desastres"},success: function(result){
@@ -51,12 +88,14 @@
                 fillOpacity: 0.8
             };
             for (var i = 0; i < result['len']; i++) {
-                clusterPoints.push({"type":"Point","coordinates":result['points'][i]});
+                clusterPoints.push({"type":"Point","coordinates":result['points'][i],
+                'properties': {'id': [result['clusters'][i],result['tipo']]}});
             }
             L.geoJson(clusterPoints, {
             pointToLayer: function (feature, latlng) {
                 return L.circleMarker(latlng, geojsonMarkerOptions);
-            }
+            },
+                onEachFeature: onEachFeature
             }).addTo(map);
         }});
         // make accessible for debugging
@@ -69,11 +108,11 @@
                     minZoom: 7
         }
         );
-        var southWest = L.latLng(-5.0159316063, -92.4938964844),
-        northEast = L.latLng(1.669685501, -75.1924972534),
+        var southWest = L.latLng(-4.934968, -81.894848),
+        northEast = L.latLng(1.142628, -75.136317),
         bounds = L.latLngBounds(southWest, northEast);
         map = new L.Map('map', {
-        center: new L.LatLng(-1.601668, -83.672867),
+        center: new L.LatLng(-1.611217, -78.863083),
         zoom: 7,
         maxBounds: bounds,
         layers: [baseLayer]
@@ -140,11 +179,11 @@
                         </div>
                     </div><!--/.col-->
                 </div>
-                <div class="col-md-12" id="map" style="height: 700px"></div>
+                <div class="col-md-6" id="map" style="height: 700px"></div>
+                <div class="col-md-5" id="pics" style="height: 700px; border-width:2px; border-style:solid; border-color: lightgray; margin-left: 5%; overflow: auto; padding: 0"><p class="text-center" style="font-size: 20px; margin-top: 48%">Seleccione alg&uacute;n punto en el mapa para visualizar las fotograf&iacute;as</p></div>
             </div>
 		</div><!--/.row-->
-
-
 	</div>	<!--/.main-->
+    <img id="popup_img" style="display: none"></img>
 	<script src="{% static 'js/bootstrap.js' %}"></script>
 </body>

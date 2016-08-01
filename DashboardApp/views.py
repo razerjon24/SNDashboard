@@ -1,7 +1,7 @@
 from django.views import generic
 from django.http import JsonResponse
 from collections import Counter
-from .models import Points,Bursts,Clusters
+from .models import Points,Bursts,Clusters,Pics
 
 class IndexView(generic.TemplateView):
    template_name = "DashboardApp/index.html"
@@ -43,6 +43,14 @@ def get_clusters(request):
     tipo = request.GET['tipo']
     points = Clusters.objects.filter(tipo__exact=tipo)
     points = [str(point).split(",") for point in points]
-    print points
+    clusters = [i for i in xrange(1,len(points)+1)]
     tam = len(points)
-    return JsonResponse({'points':points,'len':tam})
+    return JsonResponse({'points':points,'len':tam,'tipo':tipo,'clusters':clusters})
+
+def get_pics(request):
+    cluster = request.GET['cluster']
+    tipo = request.GET['tipo']
+    pics = Pics.objects.filter(tipo__exact=tipo).filter(cluster__exact=cluster)
+    pics = [str(pic.url) for pic in pics]
+    tam = len(pics)
+    return JsonResponse({'pics':pics,'len':tam})
