@@ -51,6 +51,7 @@ def get_pics(request):
     cluster = request.GET['cluster']
     tipo = request.GET['tipo']
     pics = Pics.objects.filter(tipo__exact=tipo).filter(cluster__exact=cluster)
-    pics = [str(pic.url) for pic in pics]
+    urls = [str(pic.url) for pic in pics]
+    texts = [pic.text for pic in pics]
     tam = len(pics)
-    return JsonResponse({'pics':pics,'len':tam})
+    return JsonResponse({'pics':urls,'len':tam,'texts':texts})

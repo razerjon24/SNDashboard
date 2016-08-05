@@ -15,7 +15,7 @@
 <script src="{% static 'js/bootstrap-slider.js' %}"></script>
 <script src="{% static 'js/TileLayer.Grayscale.js' %}"></script>
 <script type="text/javascript">
-    var map;
+    var map, last_layer, last_color;
     function paint_Points(tipo){
         var pics = document.getElementById('pics');
         pics.innerHTML = '<p class="text-center" style="font-size: 20px; margin-top: 48%">Seleccione alg&uacute;n punto en el mapa para visualizar las fotograf&iacute;as</p>';
@@ -58,10 +58,26 @@
     }
     function popup_pic(url){
         document.getElementById('popup_img').setAttribute("src",url);
-        $('#popup_img').bPopup();
+        $('#popup_div').bPopup();
     }
     function onEachFeature(feature, layer) {
         layer.on('click', function (e) {
+            if(last_layer != null){
+                if(feature.properties.id[1] == "Desastres"){
+                    last_layer.setStyle({'fillColor':'red'});
+                }
+                else if(feature.properties.id[1] == "Mensajes"){
+                    last_layer.setStyle({'fillColor':'#00ff40'});
+                }
+                else if(feature.properties.id[1] == "Mensajes Donacion"){
+                    last_layer.setStyle({'fillColor':'#ffff66'});
+                }
+                else if(feature.properties.id[1] == "Centros de Acopio"){
+                    last_layer.setStyle({'fillColor':"#0080ff"});
+                }
+            }
+            last_layer = layer;
+            layer.setStyle({'fillColor':'black'});
             $.ajax({url: "pics/", data:{'tipo':feature.properties.id[1],'cluster':feature.properties.id[0]},success: function(result){
                 var pics = document.getElementById('pics');
                 pics.innerHTML = "";
@@ -184,6 +200,9 @@
             </div>
 		</div><!--/.row-->
 	</div>	<!--/.main-->
-    <img id="popup_img" style="display: none"></img>
+    <div id="popup_div" style="display: none">
+        <p id = "post_text"></p>
+        <img id = "popup_img">
+    </div>
 	<script src="{% static 'js/bootstrap.js' %}"></script>
 </body>

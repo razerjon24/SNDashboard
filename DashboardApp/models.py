@@ -31,3 +31,4 @@ class Pics(models.Model):
     url = models.TextField()
     cluster = models.IntegerField()
     tipo = models.TextField()
+    text = models.TextField()
