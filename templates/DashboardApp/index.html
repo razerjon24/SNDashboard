@@ -50,8 +50,7 @@
 				</ul>
 			</li>
 			<li><a href="/topic" style="font-size: 18px"><svg class="glyph stroked two messages"><use xlink:href="#stroked-two-messages"/></svg> Caracterizaci&oacute;n de T&oacute;picos</a></li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Grafo de Hashtags</a></li>
+			<li><a href="/sentiment" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
 		</ul>
 
 	</div><!--/.sidebar-->
@@ -70,10 +69,10 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade in active" id="tab1">
                                     <br><br>
-                                    <p class="text-justify" style="font-size: 18px">Debido a la cat&aacute;strofe del terremoto ocurrido en Ecuador, se conoce por medios informativos la evoluci&oacute;n del comportamiento de la poblaci&oacute;n d&iacute;as despu&eacute;s del suceso.</p>
-                                    <p class="text-justify" style="font-size: 18px">Por ende, se desea simular tal comportamiento utilizando datos de redes sociales que son frecuentemente analizados para caracterizar una poblaci&oacute;n de individuos, los usuarios en nuestra experimentaci&oacute;n son debidamente anonimizados.</p>
-                                    <p class="text-justify" style="font-size: 18px; margin-bottom: 5%" >Estos datos fueron obtenidos de las redes sociales: Instagram y Twitter. Se analiz&oacute; el contenido de cada red social por su funciones principales. Es decir, en Instagram se categoriz&oacute; las fotograf&iacute;as por ser orientada a la generaci&oacute;n de contenido multimedia,
-                                    mientras que en Twitter se analiz&oacute; el texto por ser su diseño orientado a una plataforma de micro-blogging.</p>
+                                    <p class="text-justify" style="font-size: 18px">Debido a la cat&aacute;strofe del terremoto ocurrido en Ecuador, se conoce por medios informativos la evoluci&oacute;n del comportamiento poblacional d&iacute;as despu&eacute;s del suceso.</p>
+                                    <p class="text-justify" style="font-size: 18px">Por ende, se desea simular tal comportamiento utilizando datos de redes sociales que son frecuentemente analizados para caracterizar una poblaci&oacute;n de individuos.</p>
+                                    <p class="text-justify" style="font-size: 18px; margin-bottom: 5%" >Estos datos fueron obtenidos de las redes sociales: Instagram y Twitter. Se analiz&oacute; el contenido de cada red social por sus funciones principales. Es decir, en Instagram se analizaron fotograf&iacute;as por ser una red orientada a la generaci&oacute;n de contenido multimedia,
+                                    mientras que en Twitter se analiz&oacute; el texto estar diseñada como una plataforma de micro-blogging.</p>
                                     <div class="col-md-offset-2 col-md-4">
                                         <a href="https://www.instagram.com/"><img class="img-responsive" src="{% static 'images/instagram_logo.png' %}"></a>
                                     </div>
@@ -94,28 +93,5 @@
 
 	<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
 	<script src="{% static 'js/bootstrap.min.js' %}"></script>
-	<script src="{% static 'js/chart.min.js' %}"></script>
-	<script src="{% static 'js/chart-data.js' %}"></script>
-	<script src="{% static 'js/easypiechart.js' %}"></script>
-	<script src="{% static 'js/easypiechart-data.js' %}"></script>
-	<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
-	<script>
-		$('#calendar').datepicker({
-		});
-
-		!function ($) {
-		    $(document).on("click","ul.nav li.parent > a > span.icon", function(){          
-		        $(this).find('em:first').toggleClass("glyphicon-minus");      
-		    }); 
-		    $(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
-		}(window.jQuery);
-
-		$(window).on('resize', function () {
-		  if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
-		})
-		$(window).on('resize', function () {
-		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
-		})
-	</script>
 </body>
 

@@ -56,9 +56,11 @@
             }).addTo(map);
         }});
     }
-    function popup_pic(url){
+    function popup_pic(url,element){
         document.getElementById('popup_img').setAttribute("src",url);
         $('#popup_div').bPopup();
+        var text = element.getAttribute("text");
+        document.getElementById('popup_text').innerHTML = text;
     }
     function onEachFeature(feature, layer) {
         layer.on('click', function (e) {
@@ -85,7 +87,8 @@
                     var div = document.createElement('div');
                     div.setAttribute("class","col-md-4");
                     div.style.padding = 0;
-                    div.innerHTML = "<a href='#'><img class='img-responsive' onclick=popup_pic('"+result['pics'][i]+"') src="+result['pics'][i]+"></img></a>";
+                    var text = result['texts'][i];
+                    div.innerHTML = "<a href='#'><img class='img-responsive' onclick=popup_pic('"+result['pics'][i]+"',this) text='"+text+"' src="+result['pics'][i]+"></img></a>";
                     pics.appendChild(div);
                 }
             }});
@@ -171,8 +174,7 @@
 				</ul>
 			</li>
 			<li><a href="/topic" style="font-size: 18px"><svg class="glyph stroked two messages"><use xlink:href="#stroked-two-messages"/></svg> Caracterizaci&oacute;n de T&oacute;picos</a></li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Grafo de Hashtags</a></li>
+			<li><a href="/sentiment" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
 		</ul>
 
 	</div><!--/.sidebar-->
@@ -200,9 +202,9 @@
             </div>
 		</div><!--/.row-->
 	</div>	<!--/.main-->
-    <div id="popup_div" style="display: none">
-        <p id = "post_text"></p>
-        <img id = "popup_img">
+    <div id="popup_div" style="display: none; width: 640px">
+        <p id = "popup_text" class="text-center" style="color: white; max-height: 140px; overflow: auto"></p>
+        <img id = "popup_img" class="img-responsive center-block" style="width: 640px; height: 640px">
     </div>
 	<script src="{% static 'js/bootstrap.js' %}"></script>
 </body>

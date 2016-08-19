@@ -47,8 +47,7 @@
 				</ul>
 			</li>
 			<li class="active"><a href="#" style="font-size: 18px"><svg class="glyph stroked two messages"><use xlink:href="#stroked-two-messages"/></svg> Caracterizaci&oacute;n de T&oacute;picos</a></li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
-			<li><a href="#" style="font-size: 18px"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Grafo de Hashtags</a></li>
+			<li><a href="/sentiment" style="font-size: 18px"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> An&aacute;lisis de Sentimientos</a></li>
 		</ul>
 
 	</div><!--/.sidebar-->
@@ -127,8 +126,8 @@
         .enter().append("text")
           .style("font-size", function(d) { return d.size + "px"; })
           .style("font-family", "Impact")
-          .style("fill", function(d, i)
-          { return fill(i); })
+          .style("fill", "#6495ed")
+              //function(d, i){ return fill(i); }
           .attr("text-anchor", "middle")
           .attr("transform", function(d) {
             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";

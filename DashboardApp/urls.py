@@ -9,5 +9,7 @@ urlpatterns = [
     url(r'^geopics/$',views.GeoPicsView.as_view(), name='geopics'),
     url(r'^geopics/clusters/$',views.get_clusters, name='clusters'),
     url(r'^geopics/pics/$',views.get_pics, name='pics'),
+    url(r'^sentiment/$',views.SentimentView.as_view(), name='sentiment'),
+    url(r'^sentiment/emotions/$',views.get_emotions, name='emotions')
     # ex: /polls/5/vote/
 ]

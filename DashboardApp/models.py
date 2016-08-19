@@ -32,3 +32,8 @@ class Pics(models.Model):
     cluster = models.IntegerField()
     tipo = models.TextField()
     text = models.TextField()
+
+class Emotions(models.Model):
+    day = models.IntegerField()
+    emo_pos = models.FloatField()
+    emo_neg = models.FloatField()

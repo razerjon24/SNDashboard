@@ -1,7 +1,7 @@
 from django.views import generic
 from django.http import JsonResponse
 from collections import Counter
-from .models import Points,Bursts,Clusters,Pics
+from .models import Points,Bursts,Clusters,Pics,Emotions
 
 class IndexView(generic.TemplateView):
    template_name = "DashboardApp/index.html"
@@ -14,6 +14,9 @@ class TopicView(generic.TemplateView):
 
 class GeoPicsView(generic.TemplateView):
     template_name = "DashboardApp/geopics.html"
+
+class SentimentView(generic.TemplateView):
+    template_name = "DashboardApp/sentiment.html"
 
 def get_points(request):
     start_day = request.GET['start_day']
@@ -32,7 +35,8 @@ def get_topics(request):
     burst_topics = Bursts.objects.filter(day__range=(start_day,end_day))
     burst_topics = [(str(topic).split(",")[0],str(topic).split(",")[1]) for topic in burst_topics if not str(topic).split(",")[0].lower().__contains__("sigueme")
                     and not str(topic).split(",")[0].lower().__contains__("seguidores") and not str(topic).split(",")[0].lower().__contains__("foll")
-                    and not str(topic).split(",")[0].lower().__contains__("pss") and not str(topic).split(",")[0].isdigit() and (str(topic).split(",")[0].lower().startswith('@') or str(topic).split(",")[0].lower().startswith('#')) ]
+                    and not str(topic).split(",")[0].lower().__contains__("pss") and not str(topic).split(",")[0].isdigit()
+                    and not str(topic).split(",")[0].lower().__contains__("sigues")]
     burst_topics = sorted(burst_topics, key=lambda tup: tup[1], reverse= True)
     burst_topics = burst_topics[:101]
     topics = [topic[0] for topic in burst_topics]
@@ -52,6 +56,13 @@ def get_pics(request):
     tipo = request.GET['tipo']
     pics = Pics.objects.filter(tipo__exact=tipo).filter(cluster__exact=cluster)
     urls = [str(pic.url) for pic in pics]
-    texts = [pic.text for pic in pics]
+    texts = [pic.text.replace("\'","").replace("\"","") for pic in pics]
     tam = len(pics)
     return JsonResponse({'pics':urls,'len':tam,'texts':texts})
+
+def get_emotions(request):
+    emotions = Emotions.objects.all()
+    positiveness = [str(emotion.emo_pos) for emotion in emotions]
+    negativeness = [str(emotion.emo_neg) for emotion in emotions]
+    dates = [str(emotion.day) for emotion in emotions]
+    return JsonResponse({'neg':negativeness,'pos':positiveness,'dates':dates})
