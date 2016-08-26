@@ -80,7 +80,7 @@
                 animate.innerHTML = '<i class="fa fa-play fa-5x" style="padding: 8px 18px" onclick="start_animation()"><p style="font-size: 18px; color: white; margin-top: 20%">Play</p></i>';
                 stop_Timer();
             }
-        }, 750);
+        }, 600);
     }
     function stop_animation(){
         var animate = document.getElementById("animate");
@@ -260,6 +260,7 @@
                 <div class="col-lg-12" style="margin-top: 2%; margin-bottom: 2%">
                     <div class="col-md-3">
                         <h2 class="page-header text-center text-primary">Actividad Online</h2>
+                        <img class="center-block" src="{% static 'images/indicador.png' %}">
                     </div>
                     <div class="col-md-6">
                         <p class="text-center" style="font-size: 18px">Seleccione los d&iacute;as a observar</p>
